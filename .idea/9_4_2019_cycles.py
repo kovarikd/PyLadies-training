@@ -2,6 +2,7 @@
 # Following thing is cycle exercise
 
 from turtle import forward, left, right, exitonclick, penup, pendown, exitonclick
+from random import randint
 
 def dis_line():
     for i in range(15):
@@ -37,6 +38,24 @@ def stairs():
         right(90)
 
     exitonclick
+def asses_score(body):
+    if body > 21:
+        print("You've lost! {} is higher than 21.".format(body))
+    else:
+        print("You've Won! {} is lower than 21.".format(body))
+
+def oko_bere():
+    body = 0
+    while True:
+        print("Mas {} bodu!".format(body))
+        odp = input("Chces pokracovat?")
+        if odp.lower() == "ne":
+            asses_score(body)
+            break
+        karta = randint(2,11)
+        body = body + karta
+        print("Pocitac otocil kartu a hodnota je {}.".format(karta))
+
 
 if __name__ == '__main__':
-    stairs()
+    oko_bere()
