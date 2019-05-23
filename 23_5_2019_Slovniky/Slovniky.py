@@ -20,3 +20,4 @@ for klic in barvy_po_tydnu:
     barvy_po_tydnu[klic] = 'cerno-hnedo-' + barvy_po_tydnu[klic]
 print(barvy['jablko'])
 print(barvy_po_tydnu['jablko'])
+
