@@ -29,8 +29,8 @@ class Spaceship:
     def __init__(self, window):
         self.x = window.width / 2 
         self.y = window.height / 2 
-        self.x_speed = 0
-        self.y_speed = 0
+        self.x_speed = 100
+        self.y_speed = 100
         self.rotation = 0
         self.sprite = pyglet.sprite.Sprite(ship_img, batch=batch)
 
@@ -46,17 +46,15 @@ class Spaceship:
             self.rotation = self.rotation + ROTATION_SPEED * dt
         if pyglet.window.key.UP in pressed_keys:
             rot = math.radians(self.rotation)
-            self.x_speed = self.x_speed + dt * ACCELERATION * math.cos(rot)
-            self.y_speed = self.y_speed + dt * ACCELERATION * math.sin(rot)
+            self.x = self.x + dt * self.x_speed
+            self.y = self.y + dt * self.y_speed
         if pyglet.window.key.DOWN in pressed_keys:
             rot = math.radians(self.rotation)
-            self.x_speed = self.x_speed - dt * ACCELERATION * math.cos(rot)
-            self.y_speed = self.y_speed - dt * ACCELERATION * math.sin(rot)
+            self.x = self.x - dt * self.x_speed
+            self.y = self.y - dt * self.y_speed
 
-        distance_x = self.x_speed * dt
-        distance_y = self.y_speed * dt
-        self.x = self.x + distance_x
-        self.y = self.y + distance_y
+       
+        
         
 
         while self.x > window.width:
