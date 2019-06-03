@@ -23,22 +23,41 @@ batch = pyglet.graphics.Batch()
 
 objects = []
 
+asteroid_imgs = [load_image('.idea/27_5_2019_final_project/PNG/Meteors/meteorBrown_big1.png'),
+            load_image('.idea/27_5_2019_final_project/PNG/Meteors/meteorGrey_big3.png'),
+            load_image('.idea/27_5_2019_final_project/PNG/Meteors/meteorGrey_tiny1.png'),
+            load_image('.idea/27_5_2019_final_project/PNG/Meteors/meteorBrown_small1.png') ]
 ship_img = load_image('.idea/27_5_2019_final_project/PNG/playerShip1_blue.png')
 
-class Spaceship:
+
+class SpaceObject:
     def __init__(self, window):
         self.x = window.width / 2 
         self.y = window.height / 2 
-        self.x_speed = 100
-        self.y_speed = 100
+        self.x_speed = 50
+        self.y_speed = 50
         self.rotation = 0
-        self.sprite = pyglet.sprite.Sprite(ship_img, batch=batch)
+        self.rotation_speed = 0
 
     def draw(self):
         self.sprite.x = self.x
         self.sprite.y = self.y
         self.sprite.rotation = 90 - math.degrees(self.rotation)
 
+    def tick(self, dt):
+        while self.x > window.width:
+            self.x = self.x - window.width
+
+        while self.x < 0:
+            self.x = self.x + window.width
+
+        while self.y > window.height:
+            self.y = self.y - window.height
+class Spaceship(SpaceObject):
+    def __init__(self, window):
+        super().__init__(window)
+        self.sprite = pyglet.sprite.Sprite(ship_img, batch=batch)
+        
     def tick(self, dt):
         if pyglet.window.key.LEFT in pressed_keys:
             self.rotation = self.rotation - ROTATION_SPEED * dt
@@ -53,21 +72,28 @@ class Spaceship:
             self.x = self.x - dt * self.x_speed
             self.y = self.y - dt * self.y_speed
 
-       
+        super().tick(dt)
+
+class Asteroid(SpaceObject):
+    def __init__(self, window):
+        super().__init__(window)
+        img = random.choice(asteroid_imgs)
+        self.sprite = pyglet.sprite.Sprite(img, batch=batch)
+
+        if random.randrange(2) == 1:
+            self.x = 0 + (img.width / 2)
+            self.y = random.uniform(0 , window.height )
+        else:
+            self.x = random.uniform(0 , window.width )
+            self.y = 0 + (img.width / 2)
+
         
-        
-
-        while self.x > window.width:
-            self.x = self.x - window.width
-
-        while self.x < 0:
-            self.x = self.x + window.width
-
-        while self.y > window.height:
-            self.y = self.y - window.height
-
 
 objects.append(Spaceship(window))
+objects.append(Asteroid(window))
+objects.append(Asteroid(window))
+objects.append(Asteroid(window))
+objects.append(Asteroid(window))
 
 
 
