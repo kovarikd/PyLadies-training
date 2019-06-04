@@ -7,6 +7,7 @@ from pyglet.window import key
 
 ROTATION_SPEED = 4 
 ACCELERATION = 30
+ASTEROID_SPEED = 15
 
 def load_image(path):
     image = pyglet.image.load(path)
@@ -29,7 +30,35 @@ asteroid_imgs = [load_image('.idea/27_5_2019_final_project/PNG/Meteors/meteorBro
             load_image('.idea/27_5_2019_final_project/PNG/Meteors/meteorBrown_small1.png') ]
 ship_img = load_image('.idea/27_5_2019_final_project/PNG/playerShip1_blue.png')
 
+def draw_circle(x, y, radius):
+    iterations = 20
+    s = math.sin(2*math.pi / iterations)
+    c = math.cos(2*math.pi / iterations)
 
+    dx, dy = radius, 0
+
+    gl.glBegin(gl.GL_LINE_STRIP)
+    for i in range(iterations+1):
+        gl.glVertex2f(x+dx, y+dy)
+        dx, dy = (dx*c - dy*s), (dy*c + dx*s)
+    gl.glEnd()
+
+
+def distance(a, b, wrap_size):
+    """Distance in one dirextion (x or y)"""
+    result = abs(a - b)
+    if result > wrap_size / 2:
+        result = wrap_size - result
+    return result
+
+
+def overlaps(a, b):
+    """Returns true iff two space objects overlap"""
+    distance_squared = (distance(a.x, b.x, window.width) ** 2 +
+                        distance(a.y, b.y, window.height) ** 2)
+    max_distance_squared = (a.radius + b.radius) ** 2
+    return distance_squared < max_distance_squared
+    
 class SpaceObject:
     def __init__(self, window):
         self.x = window.width / 2 
@@ -45,6 +74,12 @@ class SpaceObject:
         self.sprite.rotation = 90 - math.degrees(self.rotation)
 
     def tick(self, dt):
+        distance_x = self.x_speed * dt
+        distance_y = self.y_speed * dt
+        self.x = self.x + distance_x
+        self.y = self.y + distance_y
+        self.rotation = self.rotation + self.rotation_speed * dt
+
         while self.x > window.width:
             self.x = self.x - window.width
 
@@ -57,6 +92,7 @@ class Spaceship(SpaceObject):
     def __init__(self, window):
         super().__init__(window)
         self.sprite = pyglet.sprite.Sprite(ship_img, batch=batch)
+        self.radius = 20
         
     def tick(self, dt):
         if pyglet.window.key.LEFT in pressed_keys:
@@ -72,6 +108,10 @@ class Spaceship(SpaceObject):
             self.x = self.x - dt * self.x_speed
             self.y = self.y - dt * self.y_speed
 
+        draw_circle(self.x, self.y, self.radius)
+
+        
+
         super().tick(dt)
 
 class Asteroid(SpaceObject):
@@ -79,6 +119,7 @@ class Asteroid(SpaceObject):
         super().__init__(window)
         img = random.choice(asteroid_imgs)
         self.sprite = pyglet.sprite.Sprite(img, batch=batch)
+        self.radius = 30
 
         if random.randrange(2) == 1:
             self.x = 0 + (img.width / 2)
@@ -86,6 +127,12 @@ class Asteroid(SpaceObject):
         else:
             self.x = random.uniform(0 , window.width )
             self.y = 0 + (img.width / 2)
+        
+        self.rotation_speed = random.uniform(-ROTATION_SPEED, ROTATION_SPEED)
+
+        self.x_speed = random.uniform(-ASTEROID_SPEED, ASTEROID_SPEED)
+        self.y_speed = random.uniform(-ASTEROID_SPEED, ASTEROID_SPEED)
+        draw_circle(self.x, self.y, self.radius)
 
         
 
